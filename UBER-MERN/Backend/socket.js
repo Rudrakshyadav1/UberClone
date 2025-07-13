@@ -33,8 +33,8 @@ function intializeSocket(server){
             }
             await captainModel.findByIdAndUpdate(userId, {
                 location: {
-                    type: "Point",
-                    coordinates: [location.lng, location.ltd]
+                    ltd:location.ltd,
+                    lng:location.lng,
                 }
             });
         });
