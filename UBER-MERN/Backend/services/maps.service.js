@@ -5,7 +5,6 @@ module.exports.getAddressCoordinate = async (address) => {
   const apiKey = process.env.GOOGLE_MAPS_API;
   const encodedAddress = encodeURIComponent(address);
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodedAddress}&key=${apiKey}`;
-
   try {
     const response = await axios.get(url);
     const data = response.data;
@@ -71,13 +70,14 @@ module.exports.suggestions = async (input) => {
     throw error;
   }
 };
-module.exports.getCaptainRadius = async (ltd, lng, radius) => {
+module.exports.getCaptainRadius = async (lat, lng, radius) => {
   const captains = await captainModel.find({
     location: {
       $geoWithin: {
-        $centerSphere: [[lng, ltd], radius / 3963.2]
+        $centerSphere: [[lng, lat], radius / 6371]
       }
     }
   });
   return captains;
 };
+

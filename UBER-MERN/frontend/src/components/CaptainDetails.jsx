@@ -13,7 +13,7 @@ const CaptainDetails = () => {
                         alt="Captain"
                     />
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-800">{captain.firstname+" "+captain.lastname}</h2>
+                        <h2 className="text-xl font-semibold text-gray-800">{captain.captain.firstname+" "+captain.captain.lastname}</h2>
                         <p className="text-sm text-gray-500">Captain</p>
                     </div>
                 </div>

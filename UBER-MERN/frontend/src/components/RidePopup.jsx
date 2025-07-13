@@ -1,5 +1,10 @@
 import React from 'react'
-const RidePopup = ({setRide,setConfirmRide}) => {
+
+const RidePopup = ({ setRide, setConfirmRide, ride }) => {
+  if (!ride || !ride.user) {
+    return null; 
+  }
+
   return (
     <div className="p-6 bg-white shadow-2xl rounded-2xl max-w-md w-full text-base">
       {/* Title */}
@@ -15,7 +20,9 @@ const RidePopup = ({setRide,setConfirmRide}) => {
             src="https://images.unsplash.com/photo-1542295669297-4d352b042bca?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0"
             alt="Rider"
           />
-          <h2 className="font-semibold text-gray-700">Mikasa Ackerman</h2>
+          <h2 className="font-semibold text-gray-700">
+            {ride.user?.firstname} {ride.user?.lastname}
+          </h2>
         </div>
         <div className="text-gray-600 font-medium text-lg">5 Km</div>
       </div>
@@ -27,7 +34,7 @@ const RidePopup = ({setRide,setConfirmRide}) => {
           <i className="ri-map-pin-fill text-2xl text-gray-500"></i>
           <div>
             <p className="font-medium">5611/A</p>
-            <p className="text-gray-600 text-sm">Airport, Defense Colony</p>
+            <p className="text-gray-600 text-sm">{ride.pickup}</p>
           </div>
         </div>
 
@@ -36,7 +43,7 @@ const RidePopup = ({setRide,setConfirmRide}) => {
           <i className="ri-map-pin-user-fill text-2xl text-gray-500"></i>
           <div>
             <p className="font-medium">5611/A</p>
-            <p className="text-gray-600 text-sm">Airport, Defense Colony</p>
+            <p className="text-gray-600 text-sm">{ride.destination}</p>
           </div>
         </div>
 
@@ -44,7 +51,7 @@ const RidePopup = ({setRide,setConfirmRide}) => {
         <div className="flex items-start gap-3 border-b pb-3">
           <i className="ri-money-rupee-circle-fill text-2xl text-gray-500"></i>
           <div>
-            <p className="font-medium">₹193.02</p>
+            <p className="font-medium">₹{Math.round(ride.fare)}</p>
             <p className="text-gray-600 text-sm">Cash / UPI</p>
           </div>
         </div>
@@ -53,13 +60,13 @@ const RidePopup = ({setRide,setConfirmRide}) => {
       {/* Action Buttons */}
       <div className="mt-5 flex flex-col gap-2">
         <button
-          onClick={() =>{
+          onClick={() => {
             setRide(false);
-            setConfirmRide(true);}
-        }
+            setConfirmRide(true);
+          }}
           className="bg-black text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
         >
-            Accept
+          Accept
         </button>
         <button
           onClick={() => setRide(false)}
@@ -69,7 +76,7 @@ const RidePopup = ({setRide,setConfirmRide}) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RidePopup
+export default RidePopup;
