@@ -4,7 +4,7 @@ const RidePopup = ({ setRide, setConfirmRide, ride }) => {
   if (!ride || !ride.user) {
     return null; 
   }
-
+  
   return (
     <div className="p-6 bg-white shadow-2xl rounded-2xl max-w-md w-full text-base">
       {/* Title */}

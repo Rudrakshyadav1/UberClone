@@ -27,9 +27,9 @@ const CaptainHome = () => {
                         userId: captain.captain._id,
                         location: {
                             type: 'Point',
-                            coordinates: [position.coords.longitude,position.coords.latitude], // e.g., [76.72, 30.81]
-                          }
-                          
+                            coordinates: [position.coords.longitude, position.coords.latitude], // e.g., [76.72, 30.81]
+                        }
+
                     });
                 });
             }
@@ -40,7 +40,6 @@ const CaptainHome = () => {
     }, [captain]);
     useEffect(() => {
         const handleNewRide = (data) => {
-            console.log('New ride received:', data);
             setRideData(data);
             setRideVisible(true);
         };
@@ -56,7 +55,6 @@ const CaptainHome = () => {
             ease: 'power2.out',
         });
     }, [rideVisible]);
-
     useEffect(() => {
         gsap.to(confirmRef.current, {
             transform: confirmRide ? 'translateY(0%)' : 'translateY(100%)',
@@ -90,7 +88,7 @@ const CaptainHome = () => {
                 />
             </div>
 
-            <div><CaptainDetails/></div>
+            <div><CaptainDetails /></div>
 
             <div>
                 <div
@@ -104,13 +102,15 @@ const CaptainHome = () => {
                         ride={rideData}
                     />
                 </div>
-                <div
-                    ref={confirmRef}
-                    className="fixed z-30 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border"
-                    style={{ transform: 'translateY(100%)' }}
-                >
-                    <CaptainConfirm setConfirmRide={setConfirmRide} />
-                </div>
+                {setConfirmRide && rideData && (
+                    <div
+                        ref={confirmRef}
+                        className="fixed z-30 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border"
+                        style={{ transform: 'translateY(100%)' }}
+                    >
+                        <CaptainConfirm setConfirmRide={setConfirmRide} rideData={rideData} />
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -31,7 +31,6 @@ module.exports.createRide = async (req, res) => {
           event: 'new-ride',
           data: {
             ...userRide.toObject(),
-            otp: undefined 
           },
         });
       }

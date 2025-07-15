@@ -25,7 +25,6 @@ const rideSchema = new mongoose.Schema({
   },
   otp:{
     type:String,
-    selected:0,
     required:1
   },
   status: {
