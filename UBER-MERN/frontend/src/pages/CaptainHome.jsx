@@ -6,7 +6,7 @@ import RidePopup from '../components/RidePopup';
 import CaptainConfirm from '../components/CaptainConfirm';
 import { SocketContext } from '../context/SocketContext';
 import { CaptainDataContext } from '../context/CaptainContext';
-
+import axios from 'axios';
 const CaptainHome = () => {
     const [rideData, setRideData] = useState(null);
     const [rideVisible, setRideVisible] = useState(false);
@@ -49,11 +49,13 @@ const CaptainHome = () => {
         };
     }, [socket]);
     useEffect(() => {
-        gsap.to(rideRef.current, {
-            transform: rideVisible ? 'translateY(0%)' : 'translateY(100%)',
-            duration: 0.5,
-            ease: 'power2.out',
-        });
+        if (rideRef.current){
+            gsap.to(rideRef.current, {
+                transform: rideVisible ? 'translateY(0%)' : 'translateY(100%)',
+                duration: 0.5,
+                ease: 'power2.out',
+            });
+        }
     }, [rideVisible]);
     useEffect(() => {
         gsap.to(confirmRef.current, {
@@ -62,7 +64,17 @@ const CaptainHome = () => {
             ease: 'power2.out',
         });
     }, [confirmRide]);
-
+    async function captainDataToUser(){
+        const response= await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/confirm`,{
+            rideId:rideData._id,
+            captainId:captain.captain._id
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+    }
     return (
         <div className="h-screen flex flex-col bg-gray-50">
             {/* Top Navbar */}
@@ -100,9 +112,10 @@ const CaptainHome = () => {
                         setRide={setRideVisible}
                         setConfirmRide={setConfirmRide}
                         ride={rideData}
+                        captainDataToUser={captainDataToUser}
                     />
                 </div>
-                {setConfirmRide && rideData && (
+                {confirmRide && rideData && (
                     <div
                         ref={confirmRef}
                         className="fixed z-30 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border"

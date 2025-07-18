@@ -9,8 +9,8 @@ import LookingForDriver from '../components/LookingForDriver';
 import axios from 'axios'; 
 import { SocketContext } from '../context/SocketContext';
 import { UserDataContext } from '../context/UserContext';
+
 const Home = () => {
-  
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
   const [panel, setPanel] = useState(false);
@@ -18,20 +18,44 @@ const Home = () => {
   const [vehicleFound, setVehicleFound] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [wait, setWait] = useState(false);
-  const [activeFeild, setActiveFeild] = useState(true); // true: pickup, false: destination
-  const [fare,setFare]=useState({});
+  const [activeFeild, setActiveFeild] = useState(true);
+  const [fare, setFare] = useState({});
+  const [vehicleType, setvehicleType] = useState(null);
+  const [rideDetails,setRideDetails]=useState(null);
+
   const panelRef = useRef(null);
   const vehicleRef = useRef(null);
   const confirmRideRef = useRef(null);
   const lookingForDriverRef = useRef(null);
   const waitingForDriverRef = useRef(null);
-  const [vehicleType,setvehicleType]=useState(null);
+
   const { socket } = useContext(SocketContext);
-  const {user}=useContext(UserDataContext);
-  useEffect(()=>{
-    console.log(user);
-    socket.emit('join',{userId:user.user._id,userType:"user"});
-  });
+  const { user } = useContext(UserDataContext);
+
+  useEffect(() => {
+    socket.emit('join', { userId: user.user._id, userType: "user" });
+  
+    const handleRideConfirmed = (response) => {
+      if (response) {
+        console.log('🚕 Ride confirmed:', response);
+        setRideDetails(response);
+        setWait(true);
+        setVehiclePanel(false);
+        setVehicleFound(false);
+        setConfirm(false);
+        setPanel(false);
+      }
+      else {
+        console.warn('ride-confirmed event received without expected data:', response);
+      }
+    };
+    socket.on('ride-confirmed', handleRideConfirmed);
+    return () => {
+      socket.off('ride-confirmed', handleRideConfirmed);
+    };
+  }, [socket, user]);
+  
+
   useEffect(() => {
     gsap.to(panelRef.current, {
       height: panel ? '70vh' : '0vh',
@@ -69,6 +93,7 @@ const Home = () => {
     gsap.to(waitingForDriverRef.current, {
       height: wait ? '70vh' : '0vh',
       autoAlpha: wait ? 1 : 0,
+      transform: wait ? 'translateY(0)' : 'translateY(100%)',
       duration: 0.5,
       ease: 'power2.out',
     });
@@ -82,29 +107,29 @@ const Home = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      console.log('Fare:', response.data);
       setFare(response.data);
-    }catch (error) {
+    } catch (error) {
       console.error('Error fetching fare:', error);
     }
   };
-  const createRide=async (vehicleType)=>{
-    try{
-      const response=await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/create`,{
+
+  const createRide = async (vehicleType) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/create`, {
         pickup,
         destination,
         vehicleType,
-    },{
-      headers:{
-        Authorization:`Bearer ${localStorage.getItem('token')}`
-      }
-    });
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       console.log(response.data);
-    }
-    catch(err){
+    } catch (err) {
       console.log(err);
     }
   };
+
   const submitHandle = (e) => e.preventDefault();
 
   return (
@@ -119,6 +144,7 @@ const Home = () => {
         src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
         alt="background"
       />
+
       <div className="absolute bottom-0 w-full">
         <div className="bg-white w-full rounded-t-2xl p-5 relative flex flex-col" style={{ height: '30vh' }}>
           <div className="flex justify-between items-center">
@@ -169,23 +195,26 @@ const Home = () => {
             setDestination={setDestination}
             setPanel={setPanel}
             setVehiclePanel={setVehiclePanel}
-            getFare={getFare} 
+            getFare={getFare}
           />
         </div>
       </div>
 
       {/* Other Panels */}
-      <div ref={vehicleRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border" style={{ transform: 'translateY(100%)' }}>
+      <div ref={vehicleRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md" style={{ transform: 'translateY(100%)' }}>
         <Vehicle setVehiclePanel={setVehiclePanel} setConfirm={setConfirm} fare={fare} setvehicleType={setvehicleType} />
       </div>
-      <div ref={confirmRideRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border" style={{ transform: 'translateY(100%)' }}>
+
+      <div ref={confirmRideRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md" style={{ transform: 'translateY(100%)' }}>
         <ConfirmedVehicle setVehicleFound={setVehicleFound} setConfirm={setConfirm} createRide={createRide} vehicleType={vehicleType} />
       </div>
-      <div ref={lookingForDriverRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border" style={{ transform: 'translateY(100%)' }}>
+
+      <div ref={lookingForDriverRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md" style={{ transform: 'translateY(100%)' }}>
         <LookingForDriver setVehicleFound={setVehicleFound} />
       </div>
-      <div ref={waitingForDriverRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border" style={{ transform: 'translateY(100%)' }}>
-        <WaitForDriver setWait={setWait} />
+
+      <div ref={waitingForDriverRef} className="fixed z-10 bottom-0 left-0 w-full p-1.5 bg-white shadow-md" style={{ height: '0vh', transform: 'translateY(100%)' }}>
+        <WaitForDriver setWait={setWait} rideDetails={rideDetails} />
       </div>
     </div>
   );

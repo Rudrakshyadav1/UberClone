@@ -1,7 +1,7 @@
 const rideModel = require('../models/ride.model');
 const mapService = require('./maps.service');
+const captainModel =require('../models/captain.model')
 const crypto = require('crypto');
-
 function getOtp(num){
   const otp = crypto.randomInt(Math.pow(10, num - 1), Math.pow(10, num)).toString();
   return otp;
@@ -60,8 +60,38 @@ async function createRide({ user, pickup, destination, vehicleType }) {
 
   return ride;
 }
+async function confirmRide({ rideId, captainId }) {
+  if (!rideId || !captainId) {
+    throw new Error('rideId and captainId are required!');
+  }
+
+  const captain = await captainModel.findByIdAndUpdate(
+    captainId,
+    { status: 'active' },
+    { new: true }
+  );
+
+  if (!captain) {
+    throw new Error('Captain not found!');
+  }
+
+  const ride = await rideModel.findById(rideId);
+  if (!ride) {
+    throw new Error('Ride not found!');
+  }
+
+  ride.status = 'accepted';
+  ride.captain = captain._id;
+  await ride.save();
+  const updatedRide = await rideModel
+    .findById(ride._id)
+    .populate(['user', 'captain']);
+
+  return updatedRide;
+}
 
 module.exports = {
   getFare,
-  createRide
+  createRide,
+  confirmRide
 };

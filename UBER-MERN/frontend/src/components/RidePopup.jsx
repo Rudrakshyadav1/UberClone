@@ -1,6 +1,6 @@
 import React from 'react'
 
-const RidePopup = ({ setRide, setConfirmRide, ride }) => {
+const RidePopup = ({ setRide, setConfirmRide, ride ,captainDataToUser}) => {
   if (!ride || !ride.user) {
     return null; 
   }
@@ -63,6 +63,7 @@ const RidePopup = ({ setRide, setConfirmRide, ride }) => {
           onClick={() => {
             setRide(false);
             setConfirmRide(true);
+            captainDataToUser();
           }}
           className="bg-black text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
         >

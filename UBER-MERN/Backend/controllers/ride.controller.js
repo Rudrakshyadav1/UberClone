@@ -59,3 +59,31 @@ module.exports.getFare = async (req, res) => {
     return res.status(500).json({ errors: [err.message || 'Internal server error'] });
   }
 };
+
+module.exports.confirmRide = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { rideId ,captainId } = req.body; 
+  try {
+    const ride = await rideService.confirmRide({ rideId,captainId }); 
+    if (ride?.user?.socketId) {
+      console.log({
+        socket:ride.user.socketId,
+        event: 'ride-confirmed',
+        data: ride
+      });
+      sendMessageToSocketId(ride.user.socketId, {
+        event: 'ride-confirmed',
+        data: ride
+      });
+    }
+    return res.status(200).json(ride);
+  } catch (err) {
+    console.error('Confirm ride error:', err.stack || err.message);
+    return res.status(500).json({ errors: [err.message || 'Internal Server Error'] }); 
+  }
+};
+

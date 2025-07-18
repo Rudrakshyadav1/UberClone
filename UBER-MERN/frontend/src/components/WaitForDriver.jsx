@@ -1,74 +1,61 @@
-import React from 'react'
+import React from 'react';
 
-const WaitForDriver = ({setWait}) => {
-  return (
-    <div>
-      <div className="flex flex-col items-center mb-4 p-4">
-        <h3
-          onClick={() =>setWait(false)} 
-          style={{ fontSize: '48px' }}
-        >
-          <i className="ri-arrow-down-wide-line"></i>
-        </h3>
+const WaitForDriver = ({ setWait, rideDetails }) => {
+  if (!rideDetails?.captain?._id){
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Waiting for driver details...
       </div>
-      <div>
-      <img
-          className="h-10 w-auto"
+    );
+  }
+  const captain = rideDetails.captain;
+
+  return (
+    <div className="flex flex-col bg-white h-full px-6 py-8">
+      {/* Driver Info */}
+      <div className="flex items-center gap-5 mb-8">
+        <img
           src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_538,w_956/v1688398986/assets/90/34c200-ce29-49f1-bf35-e9d250e8217a/original/UberX.png"
-          alt="UberX"
+          alt="Vehicle"
+          className="h-14 w-14 object-contain"
         />
-        <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-medium'>John Doe</h2> 
-          <h4 className='font-semibold'>MH40PO8907</h4>
-          <p className='text-sm text-gray-600'>Kia Carnival</p>
+        <div className="flex-1">
+          <h2 className="text-xl font-bold text-black">{`${captain.firstname} ${captain.lastname}`}</h2>
+          <p className="text-base text-gray-600">{captain.vehicle.model || 'Vehicle'}</p>
+        </div>
+        <span className="text-base font-semibold text-black bg-gray-100 px-4 py-2 rounded-lg">
+          {captain.vehicle.plate}
+        </span>
+      </div>
+
+      {/* Ride Info */}
+      <div className="space-y-6">
+        <div className="flex gap-4 items-start">
+          <i className="ri-map-pin-line text-2xl text-black mt-1"></i>
+          <div>
+            <h4 className="text-base font-semibold text-black">Pickup</h4>
+            <p className="text-sm text-gray-600">{rideDetails.pickup}</p>
+          </div>
+        </div>
+
+        <div className="flex gap-4 items-start">
+          <i className="ri-navigation-line text-2xl text-black mt-1 rotate-45"></i>
+          <div>
+            <h4 className="text-base font-semibold text-black">Destination</h4>
+            <p className="text-sm text-gray-600">{rideDetails.destination}</p>
+          </div>
+        </div>
+
+        <div className="flex gap-4 items-start">
+          <i className="ri-wallet-3-line text-2xl text-black mt-1"></i>
+          <div>
+            <h4 className="text-base font-semibold text-black">₹{rideDetails.fare}</h4>
+            <p className="text-sm text-gray-600">Cash / UPI</p>
+          </div>
         </div>
       </div>
-      <div>
-      <div className="h-1/2 w-full flex flex-col p-4 gap-4 bg-white">
-                {/* Ride Info Header */}
-                <div className="flex items-center justify-between">
-                    <img
-                        className="h-10 w-auto"
-                        src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_538,w_956/v1688398986/assets/90/34c200-ce29-49f1-bf35-e9d250e8217a/original/UberX.png"
-                        alt="UberX"
-                    />
-                    <div className="text-right">
-                        <h2 className="text-lg font-medium">John Doe</h2>
-                        <h4 className="font-semibold">MH40PO8907</h4>
-                        <p className="text-sm text-gray-600">Kia Carnival</p>
-                    </div>
-                </div>
-
-                {/* Locations & Fare */}
-                <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3 p-3 border-b border-gray-200">
-                        <i className="ri-map-pin-fill text-2xl text-blue-500"></i>
-                        <div>
-                            <h2 className="font-medium">5611/A</h2>
-                            <p className="text-sm text-gray-600">Airport, Defense colony, Chandigarh</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-3 border-b border-gray-200">
-                        <i className="ri-map-pin-user-fill text-2xl text-green-600"></i>
-                        <div>
-                            <h2 className="font-medium">5611/A</h2>
-                            <p className="text-sm text-gray-600">Airport, Defense colony, Chandigarh</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-3 border-b border-gray-200">
-                        <i className="ri-money-rupee-circle-fill text-2xl text-yellow-500"></i>
-                        <div>
-                            <h2 className="font-medium">₹193.02</h2>
-                            <p className="text-sm text-gray-600">Cash/UPI</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-      </div>
     </div>
-  )
-}
+  );
+};
 
-export default WaitForDriver
+export default WaitForDriver;
