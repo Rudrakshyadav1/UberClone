@@ -97,10 +97,26 @@ async function startRide({rideId}){
   sendMessageToSocketId(ride.user.socketId, {event:'start-ride', data:updatedRide});
   return updatedRide;
 }
-
+async function endRide({ rideId, captain }) {
+  if (!rideId || !captain) throw new Error('Ride ID is required.');
+  const ride = await rideModel.findOne({ _id: rideId, captain: captain._id }).populate('user').populate('captain');
+  if (!ride) {
+    throw new Error('Ride not found.');
+  }
+  if(ride.status === "completed") {
+    throw new Error('Ride has already ended.');
+  }
+  const updatedRide = await rideModel.findOneAndUpdate(
+    { _id: rideId },
+    { status:"completed" },
+    { new: true }
+  ).populate('user').populate('captain');
+  return updatedRide;
+}
 module.exports = {
   getFare,
   createRide,
   confirmRide,
-  startRide
+  startRide,
+  endRide
 };

@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-
+import React, { useContext, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { SocketContext } from '../context/SocketContext';
 const Riding = () => {
     const location = useLocation();
     const ride = location.state?.rideData;
-
+    const navigate=useNavigate();
+    const { socket } = useContext(SocketContext);
+    useEffect(()=>{
+        socket.on('ride-ended',(response)=>{
+            navigate('/home');
+        });
+    },[socket]);
     useEffect(() => {
         if (ride) {
             console.log('Ride data:', ride);

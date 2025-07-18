@@ -43,7 +43,7 @@ router.get('/otp-confirmed',[
 ],authMiddleware.authCaptain,rideController.startRide
 )
 router.post('/finish',[
-  body('rideId').isMongoId.withMessage('Invalid Id'),
-  body('captainId').isMongoId.withMessage('Invalid Id'),
-],authMiddleware.authCaptain,rideController.endride);
+  authMiddleware.authCaptain,
+  body('rideId').isMongoId().withMessage('Invalid Id'),
+],rideController.endride);
 module.exports = router;
