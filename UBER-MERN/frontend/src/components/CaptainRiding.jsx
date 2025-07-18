@@ -1,18 +1,36 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { CaptainDataContext } from '../context/CaptainContext';
+import { Link, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
-
 const CaptainRiding = () => {
+    const captain=useContext(CaptainDataContext);
     const [panel, setPanel] = useState(false);
     const panelRef = useRef(null);
-
+    const location = useLocation();
+    const ride = location.state?.rideData;  
     useEffect(() => {
-        gsap.to(panelRef.current, {
-            transform: panel ? 'translateY(0%)' : 'translateY(100%)',
-            duration: 0.5,
-            ease: 'power2.out'
-        });
-    }, [panel]);
+        if (ride) {
+            gsap.to(panelRef.current, {
+                transform: panel ? 'translateY(0%)' : 'translateY(100%)',
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+        }
+    }, [panel, ride]);  
+    if (!ride) {
+        return (
+            <div className="p-6 text-center text-red-600 font-semibold">
+                Loading ride details...
+            </div>
+        );
+    }
+    if (!ride.user) {
+        return (
+            <div className="p-6 text-center text-red-600 font-semibold">
+                Error: User data is missing!
+            </div>
+        );
+    }
 
     return (
         <div className="h-screen w-screen relative overflow-hidden">
@@ -64,13 +82,11 @@ const CaptainRiding = () => {
             <div
                 ref={panelRef}
                 style={{ transform: 'translateY(100%)', height: '90vh' }}
-                className="absolute bottom-0 left-0 right-0 z-40 bg-white px-6 py-5 shadow-2xl   rounded-t-2xl"
+                className="absolute bottom-0 left-0 right-0 z-40 bg-white px-6 py-5 shadow-2xl rounded-t-2xl"
             >
                 <div className='flex justify-center'>
                     <i
-                        onClick={() => {
-                            setPanel(!panel);
-                        }}
+                        onClick={() => setPanel(!panel)}
                         style={{ fontSize: '50px' }}
                         className="ri-arrow-down-wide-line text-4xl text-gray-600 "></i>
                 </div>
@@ -88,7 +104,7 @@ const CaptainRiding = () => {
                                 src="https://images.unsplash.com/photo-1542295669297-4d352b042bca?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0"
                                 alt="Rider"
                             />
-                            <h2 className="font-semibold text-gray-700">Mikasa Ackerman</h2>
+                            <h2 className="font-semibold text-gray-700">{ride.user.firstname} {ride.user.lastname}</h2>
                         </div>
                         <div className="text-gray-600 font-medium text-lg">5 Km</div>
                     </div>
@@ -100,7 +116,7 @@ const CaptainRiding = () => {
                             <i className="ri-map-pin-fill text-2xl text-gray-500"></i>
                             <div>
                                 <p className="font-medium">5611/A</p>
-                                <p className="text-gray-600 text-sm">Airport, Defense Colony</p>
+                                <p className="text-gray-600 text-sm">{ride.pickup}</p>
                             </div>
                         </div>
 
@@ -109,7 +125,7 @@ const CaptainRiding = () => {
                             <i className="ri-map-pin-user-fill text-2xl text-gray-500"></i>
                             <div>
                                 <p className="font-medium">5611/A</p>
-                                <p className="text-gray-600 text-sm">Airport, Defense Colony</p>
+                                <p className="text-gray-600 text-sm">{ride.destination}</p>
                             </div>
                         </div>
 
@@ -117,7 +133,7 @@ const CaptainRiding = () => {
                         <div className="flex items-start gap-3 border-b pb-3">
                             <i className="ri-money-rupee-circle-fill text-2xl text-gray-500"></i>
                             <div>
-                                <p className="font-medium">₹193.02</p>
+                                <p className="font-medium">₹{Math.round(ride.fare)}</p>
                                 <p className="text-gray-600 text-sm">Cash / UPI</p>
                             </div>
                         </div>
@@ -130,7 +146,6 @@ const CaptainRiding = () => {
                 >
                     Finish Ride
                 </Link>
-
 
             </div>
         </div>

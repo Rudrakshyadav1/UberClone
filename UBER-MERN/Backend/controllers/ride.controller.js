@@ -87,3 +87,21 @@ module.exports.confirmRide = async (req, res) => {
   }
 };
 
+module.exports.startRide = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+  const { rideId } = req.query;
+  if (!rideId ) return res.status(400).json({ error: 'rideId and otp are required' });
+  try {
+    const ride = await rideService.startRide({ rideId });
+    return res.status(200).json({ ride });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+// module.exports.endride=async(req,res)=>{
+//   const errors=validationResult(req);
+//   if(!errors.isEmpty()) throw new Error(json({erros:errors.array()}));
+//   const {rideId,captainId}=req.body;
+
+// }

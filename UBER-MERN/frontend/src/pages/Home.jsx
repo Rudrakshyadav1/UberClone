@@ -9,7 +9,7 @@ import LookingForDriver from '../components/LookingForDriver';
 import axios from 'axios'; 
 import { SocketContext } from '../context/SocketContext';
 import { UserDataContext } from '../context/UserContext';
-
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
@@ -22,6 +22,8 @@ const Home = () => {
   const [fare, setFare] = useState({});
   const [vehicleType, setvehicleType] = useState(null);
   const [rideDetails,setRideDetails]=useState(null);
+
+  const navigate=useNavigate();
 
   const panelRef = useRef(null);
   const vehicleRef = useRef(null);
@@ -46,12 +48,18 @@ const Home = () => {
         setPanel(false);
       }
       else {
-        console.warn('ride-confirmed event received without expected data:', response);
+        console.warn('ride-confirmed event received without expected data:');
       }
     };
+    const startRide=(response)=>{
+      console.log(response);
+      navigate('/riding',{state:{rideData:response}});
+    }
     socket.on('ride-confirmed', handleRideConfirmed);
+    socket.on('start-ride',startRide)
     return () => {
       socket.off('ride-confirmed', handleRideConfirmed);
+      socket.off('start-ride',startRide);
     };
   }, [socket, user]);
   

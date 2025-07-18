@@ -38,4 +38,12 @@ router.post('/confirm',
     body('rideId').isMongoId().withMessage('Invalid ID'),
     body('captainId').isMongoId().withMessage('Invalid ID')
   ],rideController.confirmRide);
+router.get('/otp-confirmed',[
+  query('rideId').isMongoId().withMessage('Invalid Id')
+],authMiddleware.authCaptain,rideController.startRide
+)
+router.post('/finish',[
+  body('rideId').isMongoId.withMessage('Invalid Id'),
+  body('captainId').isMongoId.withMessage('Invalid Id'),
+],authMiddleware.authCaptain,rideController.endride);
 module.exports = router;

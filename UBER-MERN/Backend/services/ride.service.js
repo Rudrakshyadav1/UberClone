@@ -2,6 +2,7 @@ const rideModel = require('../models/ride.model');
 const mapService = require('./maps.service');
 const captainModel =require('../models/captain.model')
 const crypto = require('crypto');
+const { sendMessageToSocketId } = require('../socket');
 function getOtp(num){
   const otp = crypto.randomInt(Math.pow(10, num - 1), Math.pow(10, num)).toString();
   return otp;
@@ -89,9 +90,17 @@ async function confirmRide({ rideId, captainId }) {
 
   return updatedRide;
 }
+async function startRide({rideId}){
+  const ride = await rideModel.findById(rideId).populate('user').populate('captain');
+  if(!ride) throw new Error('Ride not found!');
+  const updatedRide = await rideModel.findByIdAndUpdate(rideId, {status:'accepted'}, {new:true}).populate('user').populate('captain');
+  sendMessageToSocketId(ride.user.socketId, {event:'start-ride', data:updatedRide});
+  return updatedRide;
+}
 
 module.exports = {
   getFare,
   createRide,
-  confirmRide
+  confirmRide,
+  startRide
 };
