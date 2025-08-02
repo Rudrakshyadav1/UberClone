@@ -7,6 +7,7 @@ import CaptainConfirm from '../components/CaptainConfirm';
 import { SocketContext } from '../context/SocketContext';
 import { CaptainDataContext } from '../context/CaptainContext';
 import axios from 'axios';
+import LiveTracking from '../components/LiveTraking';
 const CaptainHome = () => {
     const [rideData, setRideData] = useState(null);
     const [rideVisible, setRideVisible] = useState(false);
@@ -49,7 +50,7 @@ const CaptainHome = () => {
         };
     }, [socket]);
     useEffect(() => {
-        if (rideRef.current){
+        if (rideRef.current) {
             gsap.to(rideRef.current, {
                 transform: rideVisible ? 'translateY(0%)' : 'translateY(100%)',
                 duration: 0.5,
@@ -64,16 +65,16 @@ const CaptainHome = () => {
             ease: 'power2.out',
         });
     }, [confirmRide]);
-    async function captainDataToUser(){
-        const response= await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/confirm`,{
-            rideId:rideData._id,
-            captainId:captain.captain._id
+    async function captainDataToUser() {
+        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/ride/confirm`, {
+            rideId: rideData._id,
+            captainId: captain.captain._id
         },
-        {
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        })
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
     }
     return (
         <div className="h-screen flex flex-col bg-gray-50">
@@ -92,16 +93,17 @@ const CaptainHome = () => {
                 </Link>
             </div>
 
-            <div className="h-full w-full">
+            {/* <div className="h-full w-full">
                 <img
                     className="h-full w-full object-cover"
                     src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
                     alt="background"
                 />
+            </div> */}
+            <LiveTracking />
+            <div className="fixed bottom-0 left-0 w-full max-h-1/2 z-10">
+                <CaptainDetails />
             </div>
-
-            <div><CaptainDetails /></div>
-
             <div>
                 <div
                     ref={rideRef}
@@ -118,7 +120,7 @@ const CaptainHome = () => {
                 {confirmRide && rideData && (
                     <div
                         ref={confirmRef}
-                        className="fixed z-30 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border"
+                        className="fixed z-50 bottom-0 left-0 w-full p-1.5 bg-white shadow-md box-border"
                         style={{ transform: 'translateY(100%)' }}
                     >
                         <CaptainConfirm setConfirmRide={setConfirmRide} rideData={rideData} />

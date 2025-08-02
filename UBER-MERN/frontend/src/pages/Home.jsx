@@ -10,6 +10,7 @@ import axios from 'axios';
 import { SocketContext } from '../context/SocketContext';
 import { UserDataContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import LiveTracking from '../components/LiveTraking';
 const Home = () => {
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
@@ -147,12 +148,12 @@ const Home = () => {
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/1600px-Uber_logo_2018.svg.png"
         alt="uber logo"
       />
-      <img
+      {/* <img
         className="h-full w-full object-cover"
         src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
         alt="background"
-      />
-
+      /> */}
+      <LiveTracking/>
       <div className="absolute bottom-0 w-full">
         <div className="bg-white w-full rounded-t-2xl p-5 relative flex flex-col" style={{ height: '30vh' }}>
           <div className="flex justify-between items-center">
